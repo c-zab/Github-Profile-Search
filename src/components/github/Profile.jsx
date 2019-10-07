@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import RepoList from './RepoList.jsx'
 
 export default class Profile extends Component {
 
   render() {
-    const {userData} = this.props;
+    const {userData, userRepos} = this.props;
     return (
       <div className="card">
         <div className="card-header">
@@ -45,6 +46,7 @@ export default class Profile extends Component {
             </div>
           </li>
         </ul>
+        <RepoList userRepos={userRepos}></RepoList>
       </div>
     )
   }

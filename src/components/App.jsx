@@ -11,7 +11,7 @@ class App extends Component {
       username: 'bradtraversy',
       userData: [],
       userRepos: [],
-      perPage: 5,
+      perPage: 10,
     }
   }
 
@@ -21,7 +21,6 @@ class App extends Component {
     const {clientId, clientSecret} = this.props;
     axios.get(`http://api.github.com/users/${username}?client_id=${clientId}&client_secret=${clientSecret}`)
       .then(res => {
-      console.log("TCL: App -> getUserData -> res", res.data)
         this.setState({userData: res.data})
       })
       .catch(err => {
@@ -30,19 +29,35 @@ class App extends Component {
       })
   }
 
+  // Get user repos from Github
+  getUserRepos() {
+    const {username, perPage} = this.state;
+    const {clientId, clientSecret} = this.props;
+    axios.get(`http://api.github.com/users/${username}/repos?per_page=${perPage}&client_id=${clientId}&client_secret=${clientSecret}&sort=created`)
+      .then(res => {
+        console.log("TCL: App -> getUserRepos -> res.data", res.data)
+        this.setState({userRepos: res.data})
+      })
+      .catch(err => {
+        this.setState({userRepos: null})
+        console.log('Ops!', err);
+      })
+  }
+
   componentDidMount() {
     this.getUserData();
+    this.getUserRepos();
   }
 
   render() {
-    const {userData} = this.state;
+    const {userData, userRepos} = this.state;
     return (
       <React.Fragment>
         <Navbar></Navbar>
         <div className="container">
           <div className="row pt-3">
             <div className="col-sm-12">
-              <Profile userData={userData}></Profile>
+              <Profile userData={userData} userRepos={userRepos}></Profile>
             </div>
           </div>
         </div>
