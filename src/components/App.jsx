@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import Navbar from './Navbar.jsx'
+import Profile from './github/Profile.jsx'
 
 class App extends Component {
   constructor(props){
@@ -11,15 +14,39 @@ class App extends Component {
       perPage: 5,
     }
   }
+
+  // Get user data from Github
+  getUserData() {
+    const {username} = this.state;
+    const {clientId, clientSecret} = this.props;
+    axios.get(`http://api.github.com/users/${username}?client_id=${clientId}&client_secret=${clientSecret}`)
+      .then(res => {
+      console.log("TCL: App -> getUserData -> res", res.data)
+        this.setState({userData: res.data})
+      })
+      .catch(err => {
+        this.setState({username: null})
+        console.log('Ops!', err);
+      })
+  }
+
+  componentDidMount() {
+    this.getUserData();
+  }
+
   render() {
+    const {userData} = this.state;
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-sm-12">
-            My App
+      <React.Fragment>
+        <Navbar></Navbar>
+        <div className="container">
+          <div className="row pt-3">
+            <div className="col-sm-12">
+              <Profile userData={userData}></Profile>
+            </div>
           </div>
         </div>
-      </div>
+      </React.Fragment>
     )
   }
 }
