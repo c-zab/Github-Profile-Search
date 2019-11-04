@@ -18,38 +18,23 @@ class App extends Component {
   }
 
   // Get user data from Github
-  getUserData() {
-    const {username, perPage} = this.state;
+  getUserData = async (username = this.state.username) => {
+    console.log("TCL: App -> getUserData -> username", username)
+    const {perPage} = this.state;
     const {clientId, clientSecret} = this.props;
-
-    axios.get(`http://api.github.com/users/${username}?client_id=${clientId}&client_secret=${clientSecret}`)
-      .then(resProfile => {
-        // Get user repos from Github
-        axios.get(`http://api.github.com/users/${username}/repos?per_page=${perPage}&client_id=${clientId}&client_secret=${clientSecret}&sort=created`)
-          .then(resRepo => {
-            this.setState({
-              userData: resProfile.data,
-              userRepos: resRepo.data,
-            })
-          })
-          .catch(err => {
-            this.setState({
-              userRepos: null,
-            })
-          })
-      })
-      .catch(err => {
-        this.setState({
-          userData: null,
-          userRepos: null,
-        })
-      })
+    try {
+      let user = await axios.get(`http://api.github.com/users/${username}?client_id=${clientId}&client_secret=${clientSecret}`);
+      let repos = await axios.get(`http://api.github.com/users/${username}/repos?per_page=${perPage}&client_id=${clientId}&client_secret=${clientSecret}&sort=created`);
+      let userData = user.data;
+      let userRepos = repos.data;
+      this.setState({userData, userRepos, username})
+    } catch (error) {
+      this.setState({userData: null, userRepos: null, username})
+    }
   }
 
   handleSearch = username => {
-    this.setState({username}, () => {
-      this.getUserData();
-    })
+    this.getUserData(username);
   }
 
   componentDidMount() {
@@ -69,7 +54,7 @@ class App extends Component {
           </div>
           <div className="row">
             <div className="col-sm-12">
-              {(!userData || !userRepos)
+              {(!userData)
                 ? <Error username={username}></Error>
                 : <Profile userData={userData} userRepos={userRepos}></Profile>
               }
