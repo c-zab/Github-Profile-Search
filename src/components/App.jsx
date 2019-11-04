@@ -10,10 +10,10 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      username: 'bradtraversy',
+      username: 'c-zab',
       userData: [],
       userRepos: [],
-      perPage: 5
+      perPage: 10
     }
   }
 
@@ -47,12 +47,12 @@ class App extends Component {
       <React.Fragment>
         <Navbar></Navbar>
         <div className="container">
-          <div className="row pt-2">
+          <div className="row my-3">
             <div className='col-sm-12'>
               <Search handleSearch={this.handleSearch}></Search>
             </div>
           </div>
-          <div className="row">
+          <div className="row my-3">
             <div className="col-sm-12">
               {(!userData)
                 ? <Error username={username}></Error>
